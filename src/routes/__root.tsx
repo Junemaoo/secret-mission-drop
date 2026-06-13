@@ -82,6 +82,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Mission Box — 为 mjm 的 23 岁生日准备的秘密任务抽取箱。" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { property: "og:title", content: "mjm23岁生日特供之 秘密任务抽取箱" },
+      { name: "twitter:title", content: "mjm23岁生日特供之 秘密任务抽取箱" },
+      { property: "og:description", content: "Mission Box — 为 mjm 的 23 岁生日准备的秘密任务抽取箱。" },
+      { name: "twitter:description", content: "Mission Box — 为 mjm 的 23 岁生日准备的秘密任务抽取箱。" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e51604d7-5e02-465c-aa9f-7e96944a2b4b/id-preview-9dbd49f7--546f0610-ca54-4235-9fd6-d18c16029eab.lovable.app-1781311212405.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e51604d7-5e02-465c-aa9f-7e96944a2b4b/id-preview-9dbd49f7--546f0610-ca54-4235-9fd6-d18c16029eab.lovable.app-1781311212405.png" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
