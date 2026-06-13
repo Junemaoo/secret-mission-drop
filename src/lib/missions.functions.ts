@@ -26,6 +26,35 @@ export const getMissionCount = createServerFn({ method: "GET" }).handler(async (
   return { count: count ?? 0 };
 });
 
+export const getHomeStatus = createServerFn({ method: "GET" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const [totalRes, remainingRes, stateRes] = await Promise.all([
+    supabaseAdmin.from("missions").select("*", { count: "exact", head: true }),
+    supabaseAdmin.from("missions").select("*", { count: "exact", head: true }).eq("is_drawn", false),
+    supabaseAdmin.from("app_state").select("value").eq("key", "party_started").maybeSingle(),
+  ]);
+  if (totalRes.error) throw new Error(totalRes.error.message);
+  if (remainingRes.error) throw new Error(remainingRes.error.message);
+  return {
+    total: totalRes.count ?? 0,
+    remaining: remainingRes.count ?? 0,
+    party_started: stateRes.data?.value === true,
+  };
+});
+
+export const startParty = createServerFn({ method: "POST" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { count } = await supabaseAdmin
+    .from("missions")
+    .select("*", { count: "exact", head: true });
+  if ((count ?? 0) < 12) return { ok: false as const, error: "not_ready" as const };
+  const { error } = await supabaseAdmin
+    .from("app_state")
+    .upsert({ key: "party_started", value: true, updated_at: new Date().toISOString() });
+  if (error) throw new Error(error.message);
+  return { ok: true as const };
+});
+
 export const submitMission = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => submitInput.parse(data))
   .handler(async ({ data }) => {
