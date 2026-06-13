@@ -14,13 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      missions: {
+        Row: {
+          created_at: string
+          drawn_by: string | null
+          id: string
+          is_drawn: boolean
+          optional_message: string | null
+          sender_city: string
+          sender_city_norm: string
+          sender_name: string
+          sender_name_norm: string
+          task_text: string
+        }
+        Insert: {
+          created_at?: string
+          drawn_by?: string | null
+          id?: string
+          is_drawn?: boolean
+          optional_message?: string | null
+          sender_city: string
+          sender_city_norm: string
+          sender_name: string
+          sender_name_norm: string
+          task_text: string
+        }
+        Update: {
+          created_at?: string
+          drawn_by?: string | null
+          id?: string
+          is_drawn?: boolean
+          optional_message?: string | null
+          sender_city?: string
+          sender_city_norm?: string
+          sender_name?: string
+          sender_name_norm?: string
+          task_text?: string
+        }
+        Relationships: []
+      }
+      players: {
+        Row: {
+          created_at: string
+          has_drawn: boolean
+          id: string
+          player_name: string
+          player_name_norm: string
+        }
+        Insert: {
+          created_at?: string
+          has_drawn?: boolean
+          id?: string
+          player_name: string
+          player_name_norm: string
+        }
+        Update: {
+          created_at?: string
+          has_drawn?: boolean
+          id?: string
+          player_name?: string
+          player_name_norm?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      draw_missions_for_player: {
+        Args: { p_player_name: string; p_player_name_norm: string }
+        Returns: {
+          id: string
+          optional_message: string
+          sender_city: string
+          sender_name: string
+          task_text: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
