@@ -79,12 +79,7 @@ export type Database = {
       }
     }
     Views: {
-      mission_count: {
-        Row: {
-          count: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       draw_missions_for_player: {
