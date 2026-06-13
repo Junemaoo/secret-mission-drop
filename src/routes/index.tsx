@@ -102,7 +102,14 @@ function HomePage() {
               )}
 
               <div className="mt-7 space-y-3">
-                {!partyStarted && (
+                {ready ? (
+                  <div
+                    aria-disabled
+                    className="block w-full cursor-not-allowed rounded-xl border-2 border-dashed border-border bg-muted/50 px-5 py-3 text-center font-medium text-muted-foreground"
+                  >
+                    任务已封存
+                  </div>
+                ) : (
                   <Link
                     to="/submit"
                     className="block w-full rounded-xl bg-primary px-5 py-3 text-center font-medium text-primary-foreground envelope-shadow transition active:translate-y-px"
@@ -131,7 +138,15 @@ function HomePage() {
             </div>
           </EnvelopeCard>
 
-          {!ready && (
+          {ready ? (
+            <p className="mt-5 text-center text-sm text-muted-foreground">
+              任务已封存完成。
+              <br />
+              感谢所有远方朋友的参与。
+              <br />
+              请等待 6.19 生日当天开启派对。
+            </p>
+          ) : (
             <p className="mt-5 text-center text-sm text-muted-foreground">
               Mission Box 尚未封存完成
               <br />
