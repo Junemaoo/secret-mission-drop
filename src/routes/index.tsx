@@ -3,7 +3,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery, queryOptions } from "@tanstack/react-query";
 import { getMissionCount } from "@/lib/missions.functions";
 import { EnvelopeCard } from "@/components/EnvelopeCard";
-import { WaxSeal } from "@/components/WaxSeal";
 import { DevTools } from "@/components/DevTools";
 
 const TOTAL = 12;
@@ -55,10 +54,6 @@ function HomePage() {
 
         <div className="relative mt-10">
           <EnvelopeCard className="pt-10">
-            <div className="pointer-events-none absolute -top-6 left-1/2 -translate-x-1/2">
-              <WaxSeal label="MB" />
-            </div>
-
             <div className="text-center">
               <p className="text-xs uppercase tracking-widest text-muted-foreground">
                 已收到任务
