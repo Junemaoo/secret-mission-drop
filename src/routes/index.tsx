@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery, queryOptions } from "@tanstack/react-query";
-import { getMissionCount } from "@/lib/missions.functions";
+import { useQuery, useQueryClient, queryOptions } from "@tanstack/react-query";
+import { getHomeStatus, startParty } from "@/lib/missions.functions";
 import { EnvelopeCard } from "@/components/EnvelopeCard";
 import { DevTools } from "@/components/DevTools";
 
@@ -22,18 +22,37 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-const countQuery = (fetcher: () => Promise<{ count: number }>) =>
+const statusQuery = (fetcher: () => Promise<{ total: number; remaining: number; party_started: boolean }>) =>
   queryOptions({
-    queryKey: ["mission-count"],
+    queryKey: ["home-status"],
     queryFn: fetcher,
     refetchOnWindowFocus: true,
+    refetchInterval: 5000,
   });
 
 function HomePage() {
-  const fetchCount = useServerFn(getMissionCount);
-  const { data, isLoading } = useQuery(countQuery(() => fetchCount()));
-  const count = data?.count ?? 0;
-  const ready = count >= TOTAL;
+  const fetchStatus = useServerFn(getHomeStatus);
+  const beginParty = useServerFn(startParty);
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  const { data, isLoading } = useQuery(statusQuery(() => fetchStatus()));
+
+  const total = data?.total ?? 0;
+  const remaining = data?.remaining ?? 0;
+  const partyStarted = data?.party_started ?? false;
+  const ready = total >= TOTAL;
+  const allDrawn = partyStarted && remaining === 0;
+
+  const displayLabel = partyStarted ? "剩余待抽取任务" : "已收到任务";
+  const displayValue = partyStarted ? remaining : total;
+
+  async function handleEnterParty() {
+    if (!partyStarted) {
+      await beginParty();
+      qc.invalidateQueries({ queryKey: ["home-status"] });
+    }
+    navigate({ to: "/draw" });
+  }
 
   return (
     <main className="min-h-dvh px-5 py-10">
@@ -47,54 +66,67 @@ function HomePage() {
             <br />
             <span className="italic">之 秘密任务抽取箱</span>
           </h1>
-          <p className="mt-3 text-sm text-muted-foreground">
-            {"\n"}
-          </p>
         </header>
 
         <div className="relative mt-10">
           <EnvelopeCard className="pt-10">
             <div className="text-center">
-              <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                已收到任务
-              </p>
-              <div className="mt-2 flex items-end justify-center gap-1 font-serif">
-                <span className="text-6xl text-primary">
-                  {isLoading ? "·" : count}
-                </span>
-                <span className="pb-2 text-2xl text-muted-foreground">/ {TOTAL}</span>
-              </div>
+              {allDrawn ? (
+                <div className="space-y-3 py-4">
+                  <p className="font-serif text-2xl text-primary">所有任务已被抽取完毕</p>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    请大家保存截图，
+                    <br />
+                    并在线下最终揭晓。
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                    {displayLabel}
+                  </p>
+                  <div className="mt-2 flex items-end justify-center gap-1 font-serif">
+                    <span className="text-6xl text-primary">
+                      {isLoading ? "·" : displayValue}
+                    </span>
+                    <span className="pb-2 text-2xl text-muted-foreground">/ {TOTAL}</span>
+                  </div>
 
-              <div className="mt-5 h-2 w-full overflow-hidden rounded-full bg-secondary">
-                <div
-                  className="h-full rounded-full bg-primary transition-all"
-                  style={{ width: `${Math.min(100, (count / TOTAL) * 100)}%` }}
-                />
-              </div>
+                  <div className="mt-5 h-2 w-full overflow-hidden rounded-full bg-secondary">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all"
+                      style={{ width: `${Math.min(100, (displayValue / TOTAL) * 100)}%` }}
+                    />
+                  </div>
+                </>
+              )}
 
               <div className="mt-7 space-y-3">
-                <Link
-                  to="/submit"
-                  className="block w-full rounded-xl bg-primary px-5 py-3 text-center font-medium text-primary-foreground envelope-shadow transition active:translate-y-px"
-                >
-                  提交任务
-                </Link>
-
-                {ready ? (
+                {!partyStarted && (
                   <Link
-                    to="/draw"
+                    to="/submit"
+                    className="block w-full rounded-xl bg-primary px-5 py-3 text-center font-medium text-primary-foreground envelope-shadow transition active:translate-y-px"
+                  >
+                    提交任务
+                  </Link>
+                )}
+
+                {ready && !allDrawn ? (
+                  <button
+                    type="button"
+                    onClick={handleEnterParty}
                     className="block w-full rounded-xl border-2 border-primary bg-accent px-5 py-3 text-center font-medium text-accent-foreground transition active:translate-y-px"
                   >
-                    进入派对 ✦ 抽取我的任务
-                  </Link>
-                ) : (
+                    {partyStarted ? "继续抽取我的任务 ✦" : "进入派对 ✦ 抽取我的任务"}
+                  </button>
+                ) : !ready ? (
                   <div
                     aria-disabled
                     className="block w-full cursor-not-allowed rounded-xl border-2 border-dashed border-border bg-muted/50 px-5 py-3 text-center font-medium text-muted-foreground"
                   >
                     进入派对（尚未开启）
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
           </EnvelopeCard>
@@ -103,7 +135,7 @@ function HomePage() {
             <p className="mt-5 text-center text-sm text-muted-foreground">
               Mission Box 尚未封存完成
               <br />
-              当前已封存任务数：<span className="text-foreground">{count} / {TOTAL}</span>
+              当前已封存任务数：<span className="text-foreground">{total} / {TOTAL}</span>
             </p>
           )}
         </div>
