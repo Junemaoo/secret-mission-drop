@@ -190,5 +190,6 @@ export const devClearAll = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin.from("missions").delete().neq("id", "00000000-0000-0000-0000-000000000000");
     await supabaseAdmin.from("players").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    await supabaseAdmin.from("app_state").upsert({ key: "party_started", value: false, updated_at: new Date().toISOString() });
     return { ok: true as const };
   });
