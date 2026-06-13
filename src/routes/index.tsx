@@ -49,7 +49,7 @@ function HomePage() {
             <span className="italic">之 秘密任务抽取箱</span>
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            来自远方的祝福，会在 6.19 当天落到伦敦某个人手里 ✦
+            {"\n"}
           </p>
         </header>
 
@@ -114,7 +114,7 @@ function HomePage() {
         </div>
 
         <footer className="mt-12 text-center text-xs text-muted-foreground/70">
-          为 mjm 23 岁生日特别制作 · 伦敦 · 6.19
+          {"\n"}
         </footer>
       </div>
 
