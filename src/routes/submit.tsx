@@ -131,7 +131,7 @@ function SubmitPage() {
                     maxLength={500}
                     required
                     rows={4}
-                    placeholder="例如：在不被 mjm 发现的情况下，帮她拍一张她最喜欢的角度的照片。"
+                    placeholder="例如：与3个不同的人击一次掌。"
                     className="w-full resize-none rounded-lg border border-input bg-background px-3 py-2.5 outline-none focus:border-ring"
                   />
                   <p className="mt-1 text-right text-xs text-muted-foreground">
