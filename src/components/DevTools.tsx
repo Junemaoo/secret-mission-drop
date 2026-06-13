@@ -37,7 +37,7 @@ export function DevTools() {
     setLoading(true);
     try {
       await seed({ data: { password } });
-      qc.invalidateQueries({ queryKey: ["mission-count"] });
+      qc.invalidateQueries({ queryKey: ["home-status"] });
       toast.success("已生成 12 条测试任务");
     } catch (e) {
       toast.error("生成失败");
@@ -51,7 +51,7 @@ export function DevTools() {
     setLoading(true);
     try {
       await clear({ data: { password } });
-      qc.invalidateQueries({ queryKey: ["mission-count"] });
+      qc.invalidateQueries({ queryKey: ["home-status"] });
       toast.success("已清空所有数据");
     } catch (e) {
       toast.error("清空失败");
