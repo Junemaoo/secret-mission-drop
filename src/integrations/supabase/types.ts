@@ -79,7 +79,12 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      mission_count: {
+        Row: {
+          count: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       draw_missions_for_player: {
@@ -92,7 +97,6 @@ export type Database = {
           task_text: string
         }[]
       }
-      get_mission_count: { Args: never; Returns: number }
     }
     Enums: {
       [_ in never]: never
